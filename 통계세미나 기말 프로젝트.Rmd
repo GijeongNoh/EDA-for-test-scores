@@ -1,0 +1,596 @@
+---
+title: "R을 이용한 자료 분석"
+output: html_document
+---
+
+## **1. 라이브러리 설치와 자료 불러오기**
+
+```{r}
+library(ggplot2)
+library(dplyr)
+```
+
+```{r}
+df1 <- read.csv("C:/Users/GiJeong.DESKTOP-EV6M1H8.001/Downloads/test_scores.csv")
+head(df1)
+str(df1)
+```
+
+
+## **2. 자료의 시각화**
+
+### **1) 범주형 자료 (school_setting, school_type, teaching method, gender, lunch)**    
+
+각 범주형 자료에 대한 학생 수를 알아보기 위해 bar chart와 pie chart를 그려보았다.     
+
+
+* school_setting
+
+```{r}
+ggplot(df1, aes(school_setting))+geom_bar() + ggtitle("The Number of students by School Location")
+```
+
+```{r}
+
+ggplot(df1, aes(x="", fill=school_setting)) + geom_bar(position = "fill")+coord_polar(theta="y") + ggtitle("The Number of students by School Location")
+
+```
+
+도심에 있는 학교를 다니는 학생이 가장 많고, 부도심, 외곽 순이다.
+
+<br>
+
+* school_type
+
+```{r}
+
+ggplot(df1, aes(school_type))+geom_bar() +  ggtitle("The Number of students by School Type")
+
+```
+
+```{r}
+
+ggplot(df1, aes(x="", fill=school_type)) + geom_bar(position = "fill")+coord_polar(theta="y") + ggtitle("The Number of students by School Type")
+
+```
+
+사립학교보다 공립학교를 다니는 학생이 약 2.6배 많다.
+
+<br>
+
+
+* teaching_method
+
+```{r}
+ggplot(df1, aes(teaching_method))+geom_bar() +  ggtitle("The Number of students by Teaching Method")
+```
+
+```{r}
+
+ggplot(df1, aes(x="", fill=teaching_method)) + geom_bar(position = "fill")+coord_polar(theta="y") + ggtitle("The Number of students by Teaching Method")
+
+```
+
+실험적인 교육보다 표준적인 교육을 받는 학생이 약 2배로 많다.
+
+<br>
+
+
+* gender
+
+```{r}
+ggplot(df1, aes(gender))+geom_bar() + ggtitle("The Number of students by Gender")
+```
+
+```{r}
+
+ggplot(df1, aes(x="", fill=gender)) + geom_bar(position = "fill")+coord_polar(theta="y") + ggtitle("The Number of students by Gender")
+
+```
+
+남학생과 여학생의 학생 수는 거의 비슷하다.
+
+<br>
+
+
+* lunch
+
+```{r}
+ggplot(df1, aes(lunch))+geom_bar() + ggtitle("The Number of students by Qualify Free Lunch")
+```
+
+```{r}
+
+ggplot(df1, aes(x="", fill=lunch)) + geom_bar(position = "fill")+coord_polar(theta="y") + ggtitle("The Number of students by Lunch")
+
+```
+
+무료 급식을 지원 받지 않는 학생이 무료 급식을 지원 받는 학생보다 약 200명 더 많다.
+
+<br>
+
+### **2) 연속형 자료 (n_student, pretest, posttest)**
+
+각 연속형 자료에 대한 학생 수를 알아보기 위해 히스토그램과 줄기-잎 그림을 그려보았다.
+
+* n_student
+
+```{r}
+ggplot(df1, aes(x=n_student)) + geom_histogram(binwidth=3) + ggtitle("the number of student of classroom")
+
+
+```
+
+학급의 학생 수가 20~25명 사이인 학급에 속한 학생이 가장 많은 것을 알 수 있으며, 학생 수가 가장 작은 학급은 15명, 가장 많은 학급은 30명이다.
+
+<br>
+
+
+* pretest
+```{r}
+stem(df1$pretest)
+```
+
+
+```{r}
+
+ggplot(df1, aes(x=pretest)) + geom_histogram(binwidth=6) + ggtitle("The number of students for pretest scores")
+
+
+```
+
+pretest 55~65점 사이에 학생들이 가장 많이 분포되어있다.
+
+<br>
+
+* posttest
+
+
+```{r}
+stem(df1$posttest)
+
+```
+
+```{r}
+
+ggplot(df1, aes(x=posttest)) + geom_histogram(binwidth=7) + ggtitle("The number of students for posttest scores")
+
+```
+
+posttest 70~80점 사이에 학생들이 가장 많이 분포되어있다.
+
+<br>
+
+
+### **3) 그룹별 pretest 점수와 posttest 점수**
+
+학생들을 그룹별로 나눠 pretest 점수와 posttest 점수를 비교하기 위해 boxplot을 이용했다.
+
+* 전체 학생들의 pretest 점수와 posttest 점수 비교
+
+```{r}
+pretest <- df1$pretest
+posttest <- df1$posttest
+boxplot(pretest, posttest, main = "Pretest score vs Posttest score", names=c("pretest","posttest"))
+
+
+```
+
+pretest 점수보다 posttest 점수가 더 높은 것을 확인할 수 있다.
+
+<br>
+
+
+* 학교 위치 별 pretest 점수와 posttest 점수 비교
+
+```{r}
+
+boxplot(pretest~school_setting, data=df1, main = "pretest score by school setting", names=c("Rural","Suburban", "Urban"))
+
+
+boxplot(posttest~school_setting, data=df1, main = "posttest score by school setting", names=c("Rural","Suburban", "Urban"))
+
+```
+
+pretest 점수와 posttest 점수 모두 부도심에서 가장 높고, 도심의 경우 최고점과 최저점의 편차가 매우 큰 것을 확인할 수 있다.
+
+<br>
+
+* 공립학교와 사립학교 별 pretest 점수와 posttest 점수 비교
+
+```{r}
+
+boxplot(pretest~school_type, data=df1, main = "pretest score by school type", names=c("Non-Public","Public"))
+
+
+boxplot(posttest~school_type, data=df1, main = "posttest score by school setting", names=c("Non-Public","Public"))
+
+```
+pretest와 posttest 점수 모두 사립학교에서 더 높다.
+
+<br>
+
+
+* 교육 방식 간 pretest 점수와 posttest 점수 비교
+
+```{r}
+boxplot(pretest~teaching_method, data=df1, main = "pretest score by teaching method", names=c("Experimental", "Standard"))
+
+
+boxplot(posttest~school_type, data=df1, main = "posttest score by teaching method", names=c("Experimental", "Standard"))
+
+```
+
+pretest와 posttest 점수 모두 교육 방식에서는 큰 차이가 없으나 실험적인 교육방식을 사용한 그룹의 점수가 약간 더 높은 것을 확인할 수 있다.
+
+<br>
+
+* 성별 간 pretest 점수와 posttest 점수 비교
+
+```{r}
+boxplot(pretest~gender, data=df1, main = "pretest score by gender", names=c("Female", "Male"))
+
+
+boxplot(posttest~gender, data=df1, main = "posttest score by gender", names=c("Female", "Male"))
+
+```
+
+pretest와 posttest 점수 모두 성별에서는 거의 차이가 없다.
+
+<br>
+
+
+* 무료 급식을 지원받는 학생과 아닌 학생의 pretest 점수와 posttest 점수 비교
+
+```{r}
+boxplot(pretest~lunch, data=df1, main = "pretest score by free lunch", names=c("Does not Qualify", "Qualifies for free lunch"))
+
+
+boxplot(posttest~lunch, data=df1, main = "posttest score by free lunch", names=c("Does not Qualify", "Qualifies for free lunch"))
+
+```
+
+pretest와 posttest점수 모두 무료 급식을 지원받지 않는 학생들의 점수가 더 높다.
+
+<br>
+
+## **3. 기술 통계**
+
+### **1) 전체 학생들의 pretest 점수와 posttest 점수 비교**
+
+```{r}
+test_score <- df1[,10:11]
+summary(test_score)
+count <- nrow(test_score)
+std_pretest <- sqrt(var(pretest))
+std_pretest <- sqrt(var(posttest))
+
+#데이터 프레임으로 만들기
+```
+
+pretest와 posttest의 점수를 비교해봤을 때, 평균, 최소값, 최대값, 사분위수 모두 posttest 점수가 높은 것으로 나타났다. 즉, 학생들은 pretest보다 posttest를 더 잘본 것으로 예상할 수 있다.
+
+```{r}
+avg_pre <- mean(pretest)
+avg_post <- mean(posttest)
+c(sum(pretest >= avg_pre) ,sum(posttest >= avg_post))
+```
+
+```{r}
+c(sum(pretest<=avg_pre), sum(posttest <=avg_post))
+
+```
+
+```{r}
+sum(pretest >= posttest)
+```
+
+pretest와 posttest 중 평균 이상인 학생이 많은 시험은 pretest이며, 두 시험 모두 평균 이하인 학생보다 평균 이상인 학생이 더 많다. 또한, posttest 점수보다 pretest 점수가 더 높은 학생은 4명밖에 되지 않았다.
+
+<br>
+
+
+### **2) 그룹별 pretest 점수와 posttest 점수 비교**
+
+* 학교 위치 별 pretest점수와 posttest 점수 비교
+
+* pretest
+```{r}
+df1 %>% group_by(school_setting) %>% summarise(n=n(), mean = mean(pretest), sd = sd(pretest), min = min(pretest), quantile_25= quantile(pretest, 0.25), quantile_50 =quantile(pretest, 0.5), quantile_75 = quantile(pretest, 0.75), max = max(pretest))
+```
+
+학교의 위치에 따라 학생들의 pretest 점수를 비교한 결과 부도심의 학생들의 평균이 가장 높고, 상위 25-50%까지의 학생의 점수가 가장 높은 것으로 확인할 수 있다. 반면, 도심의 학교에 다니는 학생이 최고점을 받았지만, 하위 25%-50%의 학생의 점수가 가장 낮은 것을 확인할 수 있다.
+
+*posttest
+
+
+```{r}
+df1 %>% group_by(school_setting) %>% summarise(n=n(), mean = mean(posttest), sd = sd(posttest), min = min(posttest), quantile_25= quantile(posttest, 0.25), quantile_50 =quantile(posttest, 0.5), quantile_75 = quantile(posttest, 0.75), max = max(posttest))
+```
+
+학교의 위치에 따라 학생들의 posttest 점수를 비교한 결과 부도심의 학생들의 평균이 가장 높고, 상위 25-50%까지의 학생의 점수가 가장 높은 것으로 확인할 수 있다. 반면, 도심의 학교에 다니는 학생이 최고점을 받았지만, 하위 25%-50%의 학생의 점수가 가장 낮은 것을 확인할 수 있다.
+
+<br>
+
+* 공립학교와 사립학교 별 pretest점수와 posttest 점수 비교
+
+* pretest
+```{r}
+df1 %>% group_by(school_type) %>% summarise(n=n(), mean = mean(pretest), sd = sd(pretest), min = min(pretest), quantile_25= quantile(pretest, 0.25), quantile_50 =quantile(pretest, 0.5), quantile_75 = quantile(pretest, 0.75), max = max(pretest))
+```
+
+공립학교와 사립학교 별 학생들의 pretest 점수를 비교한 결과 사립학교 학생들의 평균, 최저점, 최고점이 더 높은 것으로 나타났다.
+
+* posttest
+
+```{r}
+df1 %>% group_by(school_type) %>% summarise(n=n(), mean = mean(posttest), sd = sd(posttest), min = min(posttest), quantile_25= quantile(posttest, 0.25), quantile_50 =quantile(posttest, 0.5), quantile_75 = quantile(posttest, 0.75), max = max(posttest))
+```
+
+공립학교와 사립학교 별 학생들의 posttest 점수를 비교한 결과 사립학교 학생들의 평균, 최저점, 최고점이 더 높은 것으로 나타났다.
+
+<br>
+
+* 교육방식 간 pretest 점수와 posttest 점수 비교
+
+* pretest
+```{r}
+df1 %>% group_by(teaching_method) %>% summarise(n=n(), mean = mean(pretest), sd = sd(pretest), min = min(pretest), quantile_25= quantile(pretest, 0.25), quantile_50 =quantile(pretest, 0.5), quantile_75 = quantile(pretest, 0.75), max = max(pretest))
+```
+
+실험적인 교육을 받은 학생들과 표준적인 교육을 받은 학생들의 pretest 점수를 비교한 결과 실험적 교육을 받은 학생들이 상위 1%-75%의 학생들의 시험 점수가 더 높다. (그러나 1-5점정도밖에 차이가 나지 않는다.)
+
+* posttest
+
+```{r}
+df1 %>% group_by(teaching_method) %>% summarise(n=n(), mean = mean(posttest), sd = sd(posttest), min = min(posttest), quantile_25= quantile(posttest, 0.25), quantile_50 =quantile(posttest, 0.5), quantile_75 = quantile(posttest, 0.75), max = max(posttest))
+
+```
+
+실험적인 교육을 받은 학생들과 표준적인 교육을 받은 학생들의 posttest 점수를 비교한 결과 실험적 교육을 받은 학생들의 시험점수가 훨씬 높은 것을 알 수 있다.
+
+
+<br>
+
+* 성별 간 pretest 점수와 posttest 점수 비교
+
+* pretest
+```{r}
+df1 %>% group_by(gender) %>% summarise(n=n(), mean = mean(pretest), sd = sd(pretest), min = min(pretest), quantile_25= quantile(pretest, 0.25), quantile_50 =quantile(pretest, 0.5), quantile_75 = quantile(pretest, 0.75), max = max(pretest))
+
+```
+
+성별 간 pretest 점수를 비교한 결과 평균에는 거의 차이가 없지만, 남학생의 최고점과 최저점이 여학생보다 높다.
+
+<br>
+
+* posttest
+
+```{r}
+df1 %>% group_by(gender) %>% summarise(n=n(), mean = mean(posttest), sd = sd(posttest), min = min(posttest), quantile_25= quantile(posttest, 0.25), quantile_50 =quantile(posttest, 0.5), quantile_75 = quantile(posttest, 0.75), max = max(posttest))
+
+```
+
+성별 간 posttest 점수를 비교한 결과 평균에는 거의 차이가 없고, 최고점도 두 그룹 다 100점으로 같다. 그러나 여학생이 남학생보다 더 낮은 최저점을 받았다.
+
+<br>
+
+* 급식을 지원받는 학생과 아닌 학생의 pretest 점수와 posttest 점수 비교
+
+* pretest
+```{r}
+df1 %>% group_by(lunch) %>% summarise(n=n(), mean = mean(pretest), sd = sd(pretest), min = min(pretest), quantile_25= quantile(pretest, 0.25), quantile_50 =quantile(pretest, 0.5), quantile_75 = quantile(pretest, 0.75), max = max(pretest))
+
+```
+
+무료 급식을 지원받는 학생과 아닌 학생의 pretest 점수를 비교한 결과 무료 급식을 받지 않는 학생들의 시험점수가 훨씬 높은 것을 확인할 수 있다.
+
+* posttest
+
+```{r}
+df1 %>% group_by(lunch) %>% summarise(n=n(), mean = mean(posttest), sd = sd(posttest), min = min(posttest), quantile_25= quantile(posttest, 0.25), quantile_50 =quantile(posttest, 0.5), quantile_75 = quantile(posttest, 0.75), max = max(posttest))
+
+```
+
+무료 급식을 지원받는 학생과 아닌 학생의 posttest 점수를 비교한 결과 무료 급식을 받지 않는 학생들의 시험점수가 훨씬 높은 것을 확인할 수 있다.
+
+<br>
+
+### **3) pretest점수와 posttest 점수가 가장 높은/낮은 학생의 특징**
+
+* pretest 점수와 posttest 점수가 가장 높은 학생의 특징
+
+* pretest
+
+```{r}
+sum(pretest == max(pretest))
+```
+
+```{r}
+df1 %>% filter(pretest == max(pretest))
+```
+
+pretest 점수가 가장 높은 학생은 1명으로 93점이다.
+
+* posttest
+
+```{r}
+sum(posttest == max(posttest))
+```
+
+```{r}
+df1 %>% filter(posttest == max(posttest))
+```
+
+posttest 점수가 가장 높은 학생은 8명으로 100점이다.  
+
+pretest와 posttest가 가장 높은 학생들의 특징을 살펴본 결과, 모두 도시의 사립학교인 IDGFP를 재학중이고, 모두 학생 수가 17명인 P2A class이다. 이들은 실험적인 교육을 받으며, 무료 급식을 받지 않고 있다. 또한, pretest와 posttest 점수가 다 평균 이상인 것을 확인할 수 있다.
+
+<br>
+
+* 점수가 가장 낮은 학생들의 특징
+
+* pretest
+
+```{r}
+sum(pretest == min(pretest))
+```
+
+```{r}
+df1 %>% filter(pretest == min(pretest))
+```
+
+pretest 점수가 가장 낮은 학생은 1명으로 22점이다.
+
+
+* posttest
+
+```{r}
+sum(posttest == min(posttest))
+```
+
+```{r}
+df1 %>% filter(posttest == min(posttest))
+```
+
+posttest 점수가 가장 낮은 학생은 1명으로 32점이다.   
+pretest와 posttest 점수가 가장 낮은 학생들의 특징을 살펴본 결과 도시의 공립학교에 재학중이며, 한 학급의 학생 수가 28명,30명으로 많은 편이다. 이들은 무료 급식을 받고 있으며, pretest와 posttest 점수가 평균 이하인 것을 확인할 수 있다.   
+
+
+<br>
+
+### **4) pretest, posttest 점수가 높은 상위 5개 학교**
+
+* pretest
+
+```{r}
+df1 %>% group_by(school, school_type) %>% summarise(pretest = max(pretest), n_student = n()) %>% arrange(desc(pretest)) %>% head(5)
+```
+
+* posttest
+
+```{r}
+df1 %>% group_by(school, school_type) %>% summarise(posttest = max(posttest), n_student = n()) %>% arrange(desc(posttest)) %>% head(5)
+```
+
+pretest 점수가 높은 상위 5개 학교와 posttest 점수가 높은 상위 5개 학교가 같다.
+
+
+<br>
+
+## **4. T-test**
+
+### **1) pretest 점수와 posttest 점수의 평균 차이 검정**  
+
+pretest 점수와 posttest는 동일한 사람에 대한 측정값이기 때문에 paired t-test 검정을 실시한다.   
+
+* 정규성 검정   
+
+pretest의 normality test    
+H0:normally distributed vs H1: not H0
+
+```{r}
+shapiro.test(df1$pretest)
+```
+
+```{r}
+shapiro.test(df1$posttest)
+```
+
+pretest와 posttest 점수는 정규분포를 따르지 않지만, 표본수가 크기 때문에 중심극한정리에 의해 정규성을 만족한다고 가정할 수 있다.
+
+* paired t-test   
+
+H0 : pretest 점수의 평균과 posttest 점수의 평균은 차이가 없다.
+H1 : pretest 점수의 평균과 posttest 점수의 평균은 차이가 있다.   
+
+```{r}
+t.test(df1$pretest, df1$posttest, paired=TRUE)
+```
+
+p-value가 매우 작으므로 H0 기각한다. pretest 점수의 평균과 posttest 점수의 평균에는 차이가 있다.
+따라서, 대부분의 학생이 pretest 점수와 posttest 점수에 차이가 있다.
+
+### **2) 교육 방식에 따라 학생들의 시험 점수에는 차이가 있는가?**  
+
+위의 시각화와 기술 통계를 통해, 교육 방식에 따라 학생들의 시험 점수에는 차이가 있는지 한눈에 확인이 어려웠기 때문에 두 독립표본 t검정을 이용해 확인해보았다.
+
+
+* pretest
+```{r}
+standard <- filter(df1, teaching_method == "Standard")
+
+experimental <- filter(df1, teaching_method == "Experimental")
+
+```
+
+
+```{r}
+t.test(standard$pretest, experimental$pretest, paired=FALSE)
+
+```
+p-value가 0.05이하이므로 교육방식에 따라 학생들의 pretest 점수 평균에는 차이가 있다.
+
+* posttest
+
+
+```{r}
+t.test(standard$posttest, experimental$posttest, paired=FALSE)
+
+```
+
+p-value가 0.05이하이므로 교육방식에 따라 학생들의 posttest 점수 평균에는 차이가 있다.
+
+
+### **3) 성별에 따라 학생들의 시험 점수에는 차이가 있는가?**  
+위의 시각화와 기술 통계를 통해, 성별에 따라 학생들의 시험 점수에는 차이가 있는지 한눈에 확인이 어려웠기 때문에 두 독립표본 t검정을 이용해 확인해보았다.
+
+* pretest
+```{r}
+Female <- filter(df1, gender == "Female")
+
+Male <- filter(df1, gender == "Male")
+
+```
+
+
+```{r}
+t.test(Female$pretest, Male$pretest, paired=FALSE)
+
+```
+p-value가 0.05이상이므로 성별에 따라 학생들의 pretest 점수 평균에는 차이가 없다.
+
+* posttest
+
+```{r}
+
+t.test(Female$posttest, Male$posttest, paired=FALSE)
+
+```
+p-value가 0.05이상이므로 성별에 따라 학생들의 pretest 점수 평균에는 차이가 없다.
+
+<br>
+
+## **5. Regression**
+
+* 상관분석
+```{r}
+with(df1, plot(x=pretest, y=posttest))
+```
+
+```{r}
+cor(df1$pretest, df1$posttest)
+```
+
+* 회귀분석
+```{r}
+model <- lm(posttest~pretest , data=df1)
+summary(model)
+```
+
+posttest_hat = 0.9806 + 13.2131* pretest   
+학생의 pretest점수가 한 단위 증가할 때, posttest점수는 13.2131점 증가한다.
+
+
+<br>
+<br>
